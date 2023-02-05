@@ -22,7 +22,7 @@ rules:
   - list
   - watch
 ---
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   creationTimestamp: null
@@ -53,6 +53,8 @@ spec:
   #     namespace: monitoring
   #     pathPrefix: /
   #     port: web
+  #externalLabels:
+  #    tenant: tenant-a
   baseImage: quay.io/prometheus/prometheus
   enableAdminAPI: false
   externalUrl: http://tenant-a.prometheus.local/
@@ -77,7 +79,7 @@ spec:
   serviceAccountName: tenant-a-prometheus
   version: v2.18.1
 ---
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   labels:
@@ -90,9 +92,12 @@ spec:
   - host: tenant-a.prometheus.local
     http:
       paths:
-      - backend:
-          serviceName: tenant-a-prometheus
-          servicePort: 9090
+      - pathType: Prefix
+        backend:
+           service:
+              name: tenant-a-prometheus
+              port:
+                number: 9090
         path: /
 ---
 apiVersion: v1
@@ -112,7 +117,7 @@ spec:
     protocol: TCP
     targetPort: web
   selector:
-    app: prometheus
+          #app: prometheus
     prometheus: tenant-a-prometheus
   sessionAffinity: None
   type: ClusterIP

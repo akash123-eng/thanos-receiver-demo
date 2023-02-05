@@ -22,7 +22,7 @@ rules:
   - list
   - watch
 ---
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   creationTimestamp: null
@@ -76,7 +76,7 @@ spec:
   serviceAccountName: tenant-b-prometheus
   version: v2.18.1
 ---
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   labels:
@@ -89,9 +89,12 @@ spec:
   - host: tenant-b.prometheus.local
     http:
       paths:
-      - backend:
-          serviceName: tenant-b-prometheus
-          servicePort: 9090
+      - pathType: Prefix      
+        backend:
+          service:
+            name: tenant-b-prometheus
+            port: 
+             number: 9090
         path: /
 ---
 apiVersion: v1

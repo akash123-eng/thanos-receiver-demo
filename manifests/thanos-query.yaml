@@ -88,7 +88,7 @@ spec:
     app: thanos-query
     part-of: thanos
 ---
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   labels:
@@ -101,8 +101,10 @@ spec:
   - host: query.local
     http:
       paths:
-      - backend:
-          serviceName: thanos-query
-          servicePort: http
-        path: /
-
+      - pathType: Prefix
+        path: / 
+        backend:
+           service:
+              name: thanos-query
+              port:
+                number: 80
